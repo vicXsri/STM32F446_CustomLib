@@ -1,0 +1,6 @@
+../Src/gpio.c:11:6:GPIO_Init	7
+../Src/gpio.c:47:6:GPIO_DeInit	2
+../Src/gpio.c:68:6:GPIO_WritePin	2
+../Src/gpio.c:75:6:GPIO_TogglePin	1
+../Src/gpio.c:79:6:GPIO_ReadPin	1
+../Src/gpio.c:83:6:GPIO_LockPin	1

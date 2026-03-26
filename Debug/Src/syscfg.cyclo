@@ -1,0 +1,3 @@
+../Inc/main.h:13:20:__disable_IRQ	1
+../Inc/main.h:17:20:__enable_IRQ	1
+../Src/syscfg.c:11:6:pc13_exti_interrupt	1

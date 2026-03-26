@@ -1,0 +1,2 @@
+../Src/it.c:15:6:EXTI15_10_IRQHandler	8	static
+../Src/it.c:26:6:USART2_IRQHandler	8	static

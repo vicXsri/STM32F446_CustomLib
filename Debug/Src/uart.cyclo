@@ -1,0 +1,9 @@
+../Src/uart.c:31:6:RingBuffer_Init	1
+../Src/uart.c:42:6:store_char	1
+../Src/uart.c:46:6:UART_isr	1
+../Src/uart.c:53:6:USART_Init	3
+../Src/uart.c:86:10:USART_Compute_Baud	1
+../Src/uart.c:93:5:__io_putchar	1
+../Src/uart.c:97:6:debug	2
+../Src/uart.c:105:6:__UART_ENABLE_IT_EIE	1
+../Src/uart.c:108:6:__UART_ENABLE_IT_RXNE	1

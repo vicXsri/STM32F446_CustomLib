@@ -1,0 +1,2 @@
+../Src/debounce.c:12:6:Debounce_Init	2
+../Src/debounce.c:19:6:Debounce_Check	3
