@@ -1,7 +1,0 @@
-../Inc/main.h:13:20:__disable_IRQ	4	static,ignoring_inline_asm
-../Inc/main.h:17:20:__enable_IRQ	4	static,ignoring_inline_asm
-../Src/timebase.c:15:6:delay	24	static
-../Src/timebase.c:27:10:Get_Tick	8	static
-../Src/timebase.c:34:6:Tick_Increament	4	static
-../Src/timebase.c:38:6:TimeBase_Init	16	static
-../Src/timebase.c:50:6:SysTick_Handler	8	static

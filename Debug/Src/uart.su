@@ -1,9 +1,0 @@
-../Src/uart.c:31:6:RingBuffer_Init	8	static
-../Src/uart.c:42:6:store_char	16	static
-../Src/uart.c:46:6:UART_isr	16	static
-../Src/uart.c:53:6:USART_Init	16	static
-../Src/uart.c:86:10:USART_Compute_Baud	16	static
-../Src/uart.c:93:5:__io_putchar	16	static
-../Src/uart.c:97:6:debug	16	static
-../Src/uart.c:105:6:__UART_ENABLE_IT_EIE	16	static
-../Src/uart.c:108:6:__UART_ENABLE_IT_RXNE	16	static

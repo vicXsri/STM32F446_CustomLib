@@ -1,6 +1,0 @@
-../Src/main.c:31:5:main	1
-../Src/main.c:54:6:SystemSetup	1
-../Src/main.c:59:6:SystemClock_Config	3
-../Src/main.c:95:6:M_GPIO_Init	1
-../Src/main.c:118:6:M_USART2_UART_Init	1
-../Src/main.c:132:6:Error_Handler	1
