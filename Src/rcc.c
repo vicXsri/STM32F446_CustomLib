@@ -252,7 +252,13 @@ void __RCC_USART2_CLK_ENABLE(void){
 	RCC->APB1ENR |= (1U << APB1_USART2_EN);
 }
 
+void __RCC_CAN1_CLK_ENABLE(void){
+	RCC->APB1ENR |= (1U << APB1_CAN1_EN);
+}
+void __RCC_CAN2_CLK_ENABLE(void){
+	RCC->APB1ENR |= (1U << APB1_CAN2_EN);
+}
+
 void __RCC_SYSCFG_CLK_ENABLE(void){
 	RCC->APB2ENR |= SYSCFG_EN;
-
 }

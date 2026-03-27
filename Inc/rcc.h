@@ -187,6 +187,8 @@ typedef struct{
 
 #define APB1_PWR_EN			  (0x1CU)
 #define APB1_USART2_EN		  (0x11U)
+#define APB1_CAN1_EN		  (0x19U)
+#define APB1_CAN2_EN		  (0x1AU)
 
 void RCC_Enable(uint32_t pheripheral, uint8_t bus);
 void RCC_Disable(uint32_t pheripheral, uint8_t bus);
@@ -210,6 +212,8 @@ void __RCC_GPIOH_CLK_ENABLE(void);
 
 void __RCC_PWR_CLK_ENABLE(void);
 void __RCC_USART2_CLK_ENABLE(void);
+void __RCC_CAN1_CLK_ENABLE(void);
+void __RCC_CAN2_CLK_ENABLE(void);
 void __RCC_SYSCFG_CLK_ENABLE(void);
 
 #endif /* RCC_H_ */

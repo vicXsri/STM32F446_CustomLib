@@ -34,6 +34,8 @@
 #define UART5_BASE			   (APB1_BASE + 0x5000UL )
 #define USART6_BASE			   (APB2_BASE + 0x1400UL )
 
+#define CAN1_BASE			   (APB1_BASE + 0x6400UL )
+#define CAN2_BASE			   (APB1_BASE + 0x6800UL )
 
 
 #endif /* STM32_F446XX_H_ */

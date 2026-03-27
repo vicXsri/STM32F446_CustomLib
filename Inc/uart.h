@@ -10,8 +10,6 @@
 
 #include "main.h"
 
-
-
 #define UART_BUFFER_SIZE	64
 #define UART_PORTS			1
 

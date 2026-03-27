@@ -9,6 +9,7 @@
 #include "main.h"
 
 UART_HandleTypeDef huart2;
+CAN_HandleTypeDef hcan1;
 
 Debounce_Handel_t user_btn;
 
@@ -17,6 +18,8 @@ void SystemClock_Config(void);
 void M_GPIO_Init(void);
 void M_USART2_UART_Init(void);
 void Error_Handler(void);
+
+uint8_t cntr=0;
 
 int main(void)
 {
@@ -30,14 +33,14 @@ int main(void)
  	M_USART2_UART_Init();
 
 	while(1){
-//		(GPIO_ReadPin(GPIOC, GPIO_PIN_13) == 0) ?
-//				GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_SET):
-//				GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_RESET);
 		GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-		delay(15);
 
-		printf("Hello World !!\r\n");
+//		(GPIO_ReadPin(GPIOC, GPIO_PIN_13) == 0) ?
+//		GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_SET):
+//		GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_RESET);
 		delay(1000);
+//		delay(1000);
+		printf("Hello World !!\r\n");
 	}
  }
 
@@ -117,6 +120,18 @@ void M_USART2_UART_Init(void){
 	huart2.Init.OverSampling = USART_OverSampling_16;
 
 	USART_Init(&huart2);
+}
+
+void M_CAN1_Init(void){
+
+	hcan1.Instance = CAN1;
+//	hcan1.Init.Mode = ;
+	hcan1.Init.Prescaler = 5;
+	hcan1.Init.TimeSegment1 = 15;
+	hcan1.Init.TimeSegment2 = 2;
+	hcan1.Init.SyncJumpWidth = 1;
+
+	CAN_Init(&hcan1);
 }
 
 void Error_Handler(void){

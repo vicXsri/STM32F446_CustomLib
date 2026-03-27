@@ -33,6 +33,7 @@ typedef enum{
 
 #include "core_m4.h"
 #include "stm32_f446xx.h"
+#include "bitManipulator.h"
 
 #include "pwr.h"
 #include "rcc.h"
@@ -43,7 +44,8 @@ typedef enum{
 #include "exti.h"
 #include "gpio.h"
 #include "debounce.h"
-#include "msp.h"
 #include "uart.h"
+#include "can.h"
+#include "msp.h"
 
 #endif /* MAIN_H_ */

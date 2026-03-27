@@ -11,5 +11,6 @@
 #include "main.h"
 
 //void USART_MspInit(UART_HandleTypeDef* huart);
+//void CAN1_MspInit(CAN_HandleTypeDef* hcan);
 
 #endif /* MSP_H_ */
