@@ -25,6 +25,13 @@ typedef enum{
 	VIC_TIMEOUT		= 0x03U
 }Status_TypeDef;
 
+typedef enum{
+	ENABLE = 1,
+	DISABLE = !ENABLE
+}State_TypeDef;
+
+
+
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
@@ -37,6 +44,7 @@ typedef enum{
 
 #include "pwr.h"
 #include "rcc.h"
+#include "fpu.h"
 #include "it.h"
 #include "flash.h"
 #include "timbase.h"

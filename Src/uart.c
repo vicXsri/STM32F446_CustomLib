@@ -50,8 +50,11 @@ void UART_isr(UART_HandleTypeDef *huart){
 
 
 /********************************************************************************************/
-void USART_Init(UART_HandleTypeDef* huart){
-    USART_MspInit(huart);
+Status_TypeDef USART_Init(UART_HandleTypeDef* huart){
+
+	if(huart == NULL) return VIC_ERROR;
+
+	USART_MspInit(huart);
 
     /*Transfer Mode*/
     huart->Instance->CR1 = huart->Init.Mode;
@@ -81,6 +84,7 @@ void USART_Init(UART_HandleTypeDef* huart){
     huart->Instance->CR1 |= USART_EN;
 
     NVIC_Enable(USART2_IRQ);
+    return VIC_OK;
 }
 
 uint16_t USART_Compute_Baud(uint32_t pclk, uint32_t baudrate){

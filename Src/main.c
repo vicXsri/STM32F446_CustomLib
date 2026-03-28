@@ -18,19 +18,22 @@ void SystemClock_Config(void);
 void M_GPIO_Init(void);
 void M_USART2_UART_Init(void);
 void Error_Handler(void);
-
-uint8_t cntr=0;
+void M_CAN1_Init(void);
 
 int main(void)
 {
 
  	SystemSetup();
-
+ 	FPU_INTIALIZE();
  	SystemClock_Config();
 
  	M_GPIO_Init();
 
  	M_USART2_UART_Init();
+
+ 	M_CAN1_Init();
+
+	printf("can baurate ->  %lu bps\r\n\r\n\r\n", CAN_Compute_Baud(&hcan1));
 
 	while(1){
 		GPIO_TogglePin(GPIOA, GPIO_PIN_5);
@@ -38,9 +41,9 @@ int main(void)
 //		(GPIO_ReadPin(GPIOC, GPIO_PIN_13) == 0) ?
 //		GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_SET):
 //		GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_RESET);
-		delay(1000);
 //		delay(1000);
-		printf("Hello World !!\r\n");
+//		printf("Hello World !!\r\n");
+		delay(1000);
 	}
  }
 
@@ -119,19 +122,30 @@ void M_USART2_UART_Init(void){
 	huart2.Init.HWFlowCtl = USART_HWCONTROL_NONE;
 	huart2.Init.OverSampling = USART_OverSampling_16;
 
-	USART_Init(&huart2);
+	if(USART_Init(&huart2) != VIC_OK){
+		Error_Handler();
+	}
 }
 
 void M_CAN1_Init(void){
 
 	hcan1.Instance = CAN1;
-//	hcan1.Init.Mode = ;
+	hcan1.Init.Mode = CAN_NORMAL_MODE;
 	hcan1.Init.Prescaler = 5;
+	hcan1.Init.SyncJumpWidth = 1;
 	hcan1.Init.TimeSegment1 = 15;
 	hcan1.Init.TimeSegment2 = 2;
-	hcan1.Init.SyncJumpWidth = 1;
+	hcan1.Init.TimeTriggeredMode = DISABLE;
+	hcan1.Init.AutoBusOff = DISABLE;
+	hcan1.Init.AutoWakeUp = DISABLE;
+	hcan1.Init.AutoRetranmission = DISABLE;
+	hcan1.Init.RecieveFIFOLocked = DISABLE;
+	hcan1.Init.TransmitFIFOPriority = DISABLE;
 
-	CAN_Init(&hcan1);
+	if(CAN_Init(&hcan1) != VIC_OK){
+		Error_Handler();
+	}
+
 }
 
 void Error_Handler(void){

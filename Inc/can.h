@@ -55,25 +55,59 @@ typedef struct{
 }CAN_TypeDef;
 
 typedef struct{
-	uint8_t Mode;
-	uint16_t Prescaler; // Max num 1 - 1024
-	uint8_t	 TimeSegment1; // max 16
-	uint8_t	 TimeSegment2; // max 8
-	uint8_t  SyncJumpWidth; // max 1-4
+	uint32_t 	Mode;
+	uint16_t 	Prescaler; // Max num 1 - 1024
+	uint8_t	 	TimeSegment1; // max 16
+	uint8_t	 	TimeSegment2; // max 8
+	uint8_t  	SyncJumpWidth; // max 1-4
+	uint8_t     TimeTriggeredMode;
+	uint8_t     AutoBusOff;
+	uint8_t     AutoWakeUp;
+	uint8_t     AutoRetranmission;
+	uint8_t     RecieveFIFOLocked;
+	uint8_t     TransmitFIFOPriority;
 }CAN_IntitTypeDef;
 
+typedef enum{
+	CAN_STATE_RESET			= 0x00U,
+	CAN_STATE_READY			= 0x01U,
+	CAN_STATE_LISTENING		= 0x02U,
+	CAN_STATE_SLEEP_PENDING	= 0x03U,
+	CAN_STATE_SLEEP_ACTIVE  = 0x04U,
+	CAN_STATE_ERROR			= 0x05U
+
+}CAN_StateTypeDef;
+
+//typedef enum{
+//
+//};
 
 typedef struct{
-	CAN_TypeDef 		*Instance;
-	CAN_IntitTypeDef	Init;
+	CAN_TypeDef 			*Instance;
+	CAN_IntitTypeDef		Init;
+	__IO CAN_StateTypeDef	state;
+	__IO uint32_t			ErrorCode;
 }CAN_HandleTypeDef;
+
+
+#define CAN_TIMEOUT			10U
 
 #define CAN1	((CAN_TypeDef*) CAN1_BASE)
 #define CAN2	((CAN_TypeDef*) CAN2_BASE)
 
-#define CAN_Prescaler
+/*CAN BUS MODES*/
+#define CAN_NORMAL_MODE				0x00000000U
+#define CAN_LOOPBACK_MODE			0x40000000U
+#define CAN_SILENT_MODE				0x80000000U
+#define CAN_SILENT_LOOPBACK_MODE	CAN_LOOPBACK_MODE | CAN_SILENT_MODE
 
-void CAN_Init(CAN_HandleTypeDef* hcan);
-void CAN1_MspInit(CAN_HandleTypeDef* hcan);
+
+/*CAN BUS ERRORS*/
+#define CAN_ERROR_NONE			0x00000000U
+#define CAN_ERROR_TIMEOUT		0x00000001U
+
+Status_TypeDef CAN_Init(CAN_HandleTypeDef* hcan);
+uint32_t CAN_Compute_Baud(CAN_HandleTypeDef* hcan);
+void CAN_MspInit(CAN_HandleTypeDef* hcan);
 
 #endif /* CAN_H_ */

@@ -82,7 +82,7 @@ typedef struct {
 #define UART5						((USART_TypeDef*) UART5_BASE )
 #define USART6						((USART_TypeDef*) USART6_BASE)
 
-void USART_Init(UART_HandleTypeDef* huart);
+Status_TypeDef USART_Init(UART_HandleTypeDef* huart);
 void USART_MspInit(UART_HandleTypeDef* huart);
 uint16_t USART_Compute_Baud(uint32_t pclk, uint32_t baudrate);
 void debug(int ch);

@@ -43,7 +43,7 @@ void USART_MspInit(UART_HandleTypeDef* huart){
 }
 
 
-void CAN1_MspInit(CAN_HandleTypeDef* hcan){
+void CAN_MspInit(CAN_HandleTypeDef* hcan){
 
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 

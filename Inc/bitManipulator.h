@@ -12,14 +12,14 @@
 
 #define	SET_BIT(REG, BIT)	((REG) |= (BIT)) //Setting specific bit to 1, without the offset, The offset should be passed inside Directly
 
-#define	RESET_BIT(REG, BIT)	((REG) &=~(BIT)) //Reseting the bit to 0, without the offset,  The offset should be passed inside Directly
+#define	RESET_BIT(REG, BIT)	((REG) &= ~(BIT)) //Reseting the bit to 0, without the offset,  The offset should be passed inside Directly
 
 #define	READ_BIT(REG, MASK)	((REG) & (MASK)) //Read specific bit value
 
 
 #define	INVERT_BIT(REG, MASK, OFF)	((REG) ^= (MASK << OFF)) //Read specific bit value
 
-#define	READ_FIELD(REG, MASK, OFF)	((REG) & (MASK << OFF)) //Read specific bit value
+#define	READ_FIELD(REG, OFF, MASK)	((REG >> OFF) & (MASK)) //Read specific bit value
 
 #define SET_FIELD(REG, MASK, OFF) ((REG) |= (MASK << OFF)) // Setting the bit to 1, with offset
 
