@@ -20,6 +20,55 @@ void M_USART2_UART_Init(void);
 void Error_Handler(void);
 void M_CAN1_Init(void);
 
+CAN_TxTypeDef TxHeader;
+CAN_RxTypeDef RxHeader;
+
+CAN_FilterTypeDef canFilter;
+
+uint32_t mailbox;
+
+uint8_t txData[8];
+uint8_t rxData[8];
+
+void filter_can(void){
+
+	canFilter.FilterActivation = ENABLE;
+	canFilter.FilterFIFOAssignment = RX_FIFO0;
+	canFilter.FilterBank = FILTER_BANK0;
+	canFilter.FilterMode = CAN_FILTERMODE_IDMASK;
+	canFilter.FilterScale = CAN_FILTERSCALE_32BIT;
+	canFilter.FilterIdHigh = 0x0000;
+	canFilter.FilterIdLow = 0x0000;
+	canFilter.FilterMaskIdHigh = 0x0000;
+	canFilter.FilterMaskIdLow = 0x0000;
+	canFilter.SlaveStartFilterBank = 14;
+
+		if(CAN_ConfigFilter(&hcan1, &canFilter) != VIC_OK){
+			Error_Handler();
+		}
+}
+
+void transmit_can(void){
+	TxHeader.IDE = 1;
+	TxHeader.ExtId = 0xFFFF;
+	TxHeader.RTR = 0;
+	TxHeader.DLC = 8;
+
+	txData[0] = 0x01;
+	txData[1] = 0x01;
+	txData[2] = 0x01;
+	txData[3] = 0x01;
+	txData[4] = 0x01;
+	txData[5] = 0x01;
+	txData[6] = 0x01;
+	txData[7] = 0x01;
+
+//	if(CAN_Transmit(&hcan1, &TxHeader, txData, &mailbox) != VIC_OK){
+//		Error_Handler();
+//	}
+
+}
+
 int main(void)
 {
 
@@ -31,9 +80,18 @@ int main(void)
 
  	M_USART2_UART_Init();
 
+ 	/* Init CAN !*/
  	M_CAN1_Init();
-
 	printf("can baurate ->  %lu bps\r\n\r\n\r\n", CAN_Compute_Baud(&hcan1));
+
+	/* Setup Filter !*/
+//	filter_can();
+
+	/* Start CAN !*/
+//	CAN_Start(&hcan1);
+
+	/* Transmit CAN !*/
+//	transmit_can();
 
 	while(1){
 		GPIO_TogglePin(GPIOA, GPIO_PIN_5);
