@@ -30,6 +30,8 @@ uint32_t mailbox;
 uint8_t txData[8];
 uint8_t rxData[8];
 
+uint32_t canBaudRate = 0;
+
 void filter_can(void){
 
 	canFilter.FilterActivation = ENABLE;
@@ -44,28 +46,34 @@ void filter_can(void){
 	canFilter.SlaveStartFilterBank = 14;
 
 		if(CAN_ConfigFilter(&hcan1, &canFilter) != VIC_OK){
+//			printf("Filter Error\r\n\r\n");
 			Error_Handler();
+		}else{
+//			printf("Filter Success\r\n\r\n");
 		}
 }
-
+uint8_t itr=0;
 void transmit_can(void){
-	TxHeader.IDE = 1;
+	TxHeader.IDE = CAN_EXT_ID;
 	TxHeader.ExtId = 0xFFFF;
-	TxHeader.RTR = 0;
+	TxHeader.RTR = CAN_RTR_DATA;
 	TxHeader.DLC = 8;
 
-	txData[0] = 0x01;
-	txData[1] = 0x01;
-	txData[2] = 0x01;
-	txData[3] = 0x01;
-	txData[4] = 0x01;
-	txData[5] = 0x01;
-	txData[6] = 0x01;
-	txData[7] = 0x01;
+	txData[0] = itr++;
+	txData[1] = itr++;
+	txData[2] = itr++;
+	txData[3] = itr++;
+	txData[4] = itr++;
+	txData[5] = itr++;
+	txData[6] = itr++;
+	txData[7] = itr++;
 
-//	if(CAN_Transmit(&hcan1, &TxHeader, txData, &mailbox) != VIC_OK){
-//		Error_Handler();
-//	}
+	if(CAN_TransmitMessage(&hcan1, &TxHeader, txData, &mailbox) != VIC_OK){
+//		printf("Transmit Failed\r\n\r\n");
+		Error_Handler();
+	}else{
+//		printf("Transmit Success\r\n\r\n");
+	}
 
 }
 
@@ -73,27 +81,43 @@ int main(void)
 {
 
  	SystemSetup();
- 	FPU_INTIALIZE();
  	SystemClock_Config();
+
+ 	FPU_Init();
 
  	M_GPIO_Init();
 
  	M_USART2_UART_Init();
 
- 	/* Init CAN !*/
+ 	/* Init CAN ! */
  	M_CAN1_Init();
-	printf("can baurate ->  %lu bps\r\n\r\n\r\n", CAN_Compute_Baud(&hcan1));
+//	printf("CAN Init Done\r\n\r\n");
+
+//	if(CAN_Compute_Baud(&hcan1, &canBaudRate) != VIC_OK){
+//		printf("CAN_BaudRate Not Updated CHeck The State");
+//		Error_Handler();
+//	}
+//	else{
+//		printf("can baurate ->  %lu bps\r\n\r\n\r\n", canBaudRate);
+//	}
 
 	/* Setup Filter !*/
-//	filter_can();
+	filter_can();
 
 	/* Start CAN !*/
-//	CAN_Start(&hcan1);
+	if(CAN_Start(&hcan1) != VIC_OK){
+//		printf("CAN Start Failed\r\n\r\n");
+		Error_Handler();
+	}else{
+//		printf("CAN Start Success\r\n\r\n");
+	}
 
-	/* Transmit CAN !*/
-//	transmit_can();
 
 	while(1){
+		/* Transmit CAN !*/
+
+		transmit_can();
+
 		GPIO_TogglePin(GPIOA, GPIO_PIN_5);
 
 //		(GPIO_ReadPin(GPIOC, GPIO_PIN_13) == 0) ?
@@ -134,6 +158,10 @@ void SystemClock_Config(void){
 		Error_Handler();
 	}
 
+	if(__PWR_OVERDRIVE_ENABLE() != VIC_OK){
+		Error_Handler();
+	}
+
 	RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_SYSCLK|RCC_CLOCKTYPE_HCLK|
 								  RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
 	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLOCKSOURCE_PLLCLK;
@@ -150,6 +178,7 @@ void M_GPIO_Init(void){
 
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 
+	__RCC_GPIOH_CLK_ENABLE();
 	__RCC_GPIOA_CLK_ENABLE();
 	__RCC_GPIOC_CLK_ENABLE();
 
@@ -188,7 +217,7 @@ void M_USART2_UART_Init(void){
 void M_CAN1_Init(void){
 
 	hcan1.Instance = CAN1;
-	hcan1.Init.Mode = CAN_NORMAL_MODE;
+	hcan1.Init.Mode = CAN_LOOPBACK_MODE;
 	hcan1.Init.Prescaler = 5;
 	hcan1.Init.SyncJumpWidth = 1;
 	hcan1.Init.TimeSegment1 = 15;

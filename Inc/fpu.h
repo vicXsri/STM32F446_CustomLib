@@ -12,7 +12,7 @@
 
 
 
-void FPU_INTIALIZE(void);
+void FPU_Init(void);
 
 
 

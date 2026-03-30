@@ -139,11 +139,18 @@ typedef struct{
 #define CAN_ERROR_NONE					0x00000000U
 #define CAN_ERROR_TIMEOUT				0x00000001U
 #define CAN_ERROR_NOT_INTIALIZED		0x00000002U
+#define CAN_ERROR_NOT_READY				0x00000003U
+#define CAN_ERROR_PARAM					0x00000004U
+
+
+/*CAN Id*/
+#define CAN_STD_ID						0x00000000U
+#define CAN_EXT_ID						0x00000004U
 
 
 /*Recieve FIFOs*/
-#define RX_FIFO0				0x00000000U
-#define RX_FIFO1				0x00000001U
+#define RX_FIFO0						0x00000000U
+#define RX_FIFO1						0x00000001U
 
 /*Filter Banks*/
 #define FILTER_BANK0				0x00000000U
@@ -183,9 +190,15 @@ typedef struct{
 #define CAN_FILTERSCALE_16BIT		0x00000000U
 #define CAN_FILTERSCALE_32BIT		0x00000001U
 
+/*CAN RTR Modes*/
+#define CAN_RTR_DATA				0x00000000U
+#define CAN_RTR_REMOTE				0x00000002U
+
 Status_TypeDef CAN_Init(CAN_HandleTypeDef* hcan);
 Status_TypeDef CAN_ConfigFilter(CAN_HandleTypeDef* hcan, CAN_FilterTypeDef* canFilter);
-uint32_t CAN_Compute_Baud(CAN_HandleTypeDef* hcan);
+Status_TypeDef CAN_Start(CAN_HandleTypeDef* hcan);
+Status_TypeDef CAN_TransmitMessage(CAN_HandleTypeDef* hcan, const CAN_TxTypeDef* pTxHeader, const uint8_t txData[], uint32_t* mailbox);
+Status_TypeDef CAN_Compute_Baud(CAN_HandleTypeDef* hcan, uint32_t* BaudRate);
 void CAN_MspInit(CAN_HandleTypeDef* hcan);
 
 #endif /* CAN_H_ */

@@ -12,7 +12,7 @@
 #define FPU_CPCAR_ADDRESS	0xE000ED88
 
 
-void FPU_INTIALIZE(void){
+void FPU_Init(void){
 	uint32_t *addr = (uint32_t*)0xE000ED88;
 	*addr |= (0x1UL << 20U);
 	*addr |= (0x1UL << 21U);

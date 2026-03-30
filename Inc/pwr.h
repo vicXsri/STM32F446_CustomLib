@@ -18,9 +18,13 @@ typedef struct{
 
 #define PWR			   ((PWR_TypeDef*) PWR_BASE)
 
-#define PWR_VOS_SCALE1 (0x3U << 14)
+#define PWR_VOS_SCALE1  (0x03UL << 14U)
+#define PWR_ODEN		(0x01UL << 16U)
+#define PWR_ODSWEN		(0x01UL << 17U)
 
+#define PWR_TIMEOUT		1000U
 
 void __PWR_VOLTAGESCALING_CONFIG(void);
+Status_TypeDef __PWR_OVERDRIVE_ENABLE(void);
 
 #endif /* PWR_H_ */

@@ -27,7 +27,7 @@
 
 
 #define	CLEAR_REG(REG)	((REG) = (0x00))
-
+#define READ_REG(REG) (REG)
 #define	WRITE_REG(REG, VAL)	((REG) = (VAL))
 
 #endif /* BITMANIPULATOR_H_ */

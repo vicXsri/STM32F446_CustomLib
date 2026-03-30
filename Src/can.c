@@ -20,6 +20,7 @@ Status_TypeDef CAN_Init(CAN_HandleTypeDef* hcan){
 
 
 	/*Request Initialization Mode*/
+//	SET_BIT(hcan->Instance->MCR, (0x1UL << 1U));
 	SET_BIT(hcan->Instance->MCR, (0x1UL << 0U));
 
 	tickstart = Get_Tick();
@@ -86,9 +87,9 @@ Status_TypeDef CAN_Init(CAN_HandleTypeDef* hcan){
 	/*Setup Baud Rate register  the baud Rate -> BTR*/
 	WRITE_REG(hcan->Instance->BTR,
 									(uint32_t)((hcan->Init.Prescaler - 1U) << 0)  |
-									(hcan->Init.TimeSegment1 << 16)  |
-									(hcan->Init.TimeSegment2 << 20)  |
-									(hcan->Init.SyncJumpWidth << 24) |
+									((hcan->Init.TimeSegment1 - 1) <<  16U)  	  |
+									((hcan->Init.TimeSegment2 - 1) <<  20U)  	  |
+									((hcan->Init.SyncJumpWidth - 1) << 24U)       |
 									(hcan->Init.Mode)
 			 );
 
@@ -96,10 +97,11 @@ Status_TypeDef CAN_Init(CAN_HandleTypeDef* hcan){
 	hcan->ErrorCode = CAN_ERROR_NONE;
 
 	/*Change the CAN State*/
-	hcan->state = CAN_STATE_RESET;
+	hcan->state = CAN_STATE_READY;
 
 	return VIC_OK;
 }
+
 Status_TypeDef CAN_ConfigFilter(CAN_HandleTypeDef* hcan, CAN_FilterTypeDef* canFilter){
 
 	uint32_t filternbrbitpos;
@@ -217,25 +219,140 @@ Status_TypeDef CAN_ConfigFilter(CAN_HandleTypeDef* hcan, CAN_FilterTypeDef* canF
 
 }
 
-uint32_t CAN_Compute_Baud(CAN_HandleTypeDef* hcan){
+Status_TypeDef CAN_Start(CAN_HandleTypeDef* hcan){
+	uint32_t tickstart=0;
 
-    float apb1clk = (float) (RCC_GetP1CLK_Freq()/1000000);
+	if(hcan->state == CAN_STATE_READY){
+		/*Chnage CAN Pheripheral State*/
+		hcan->state = CAN_STATE_LISTENING;
 
-    float tpclk = (1.0/apb1clk) * 1000 ;
+		/*Request Leave Intialization - this is for additional Saftey !!*/
+		CLEAR_FIELD(hcan->Instance->MCR, 0x01U, 0U);
 
-    uint16_t prescaler = READ_FIELD(hcan->Instance->BTR, 0, 0x3FF) + 1;
+		/*Get Tick*/
+		tickstart = Get_Tick();
 
-    float tq =  tpclk * prescaler;
+		/*Wait for the ack From MSR reg for Initialization*/
+		while((hcan->Instance->MSR & (0x1UL << 0U)) != 0x00U){
+			/*Verify Timeout*/
+			if((Get_Tick() - tickstart) > CAN_TIMEOUT){
+				/*Update Error Code*/
+				hcan->ErrorCode |= CAN_ERROR_TIMEOUT;
+				/*Change Can State*/
+				hcan->state = CAN_STATE_ERROR;
 
-    uint16_t bs1   	= READ_FIELD(hcan->Instance->BTR, 16,0x0F),
-    		 bs2    = READ_FIELD(hcan->Instance->BTR, 20,0x07),
-			 sync   = READ_FIELD(hcan->Instance->BTR, 24,0x03);
+				/*Return Function Status*/
+				return VIC_ERROR;
+			}
+		}
+		/*Reset CAN Error Code*/
+		hcan->ErrorCode = CAN_ERROR_NONE;
 
-    float N = sync + bs1 + bs2;
+		/*Return Function Status*/
+		return VIC_OK;
+	}
+	else{
 
-    float NBT = (N * tq) / 1000;
+		/*Update CAN Error Code*/
+		hcan->ErrorCode |= CAN_ERROR_NOT_READY;
 
-    uint32_t BaudRate = 1/(NBT / 1000000);
+		/*Return Function Status*/
+		return VIC_ERROR;
+	}
+}
 
-    return BaudRate;
+Status_TypeDef CAN_TransmitMessage(CAN_HandleTypeDef* hcan, const CAN_TxTypeDef* pTxHeader, const uint8_t txData[], uint32_t* mailbox){
+
+	uint32_t transmitmailbox = 0, tsr = READ_REG(hcan->Instance->TSR); //Transmit Status Register
+	CAN_StateTypeDef state = hcan->state;
+
+	if((state == CAN_STATE_READY) || (state == CAN_STATE_LISTENING)){
+
+		if(((tsr & (1UL << 26U)) != 0U) ||
+		   ((tsr & (1UL << 27U)) != 0U) ||
+		   ((tsr & (1UL << 28U)) != 0U)){
+
+			/*Select an Empty transmit mailbox*/
+			transmitmailbox = (tsr & (0x3UL << 24U) >> (24U));
+
+			/*Store the Tx mailbox*/
+			*mailbox = (uint32_t)1 << transmitmailbox;
+
+			/*Set up the Id*/
+			if(pTxHeader->IDE == CAN_STD_ID){
+				hcan->Instance->sTxMailBox[transmitmailbox].TIR =
+						((pTxHeader->StdId << 21U)| pTxHeader->RTR);
+			}else{
+				hcan->Instance->sTxMailBox[transmitmailbox].TIR =
+						((pTxHeader->ExtId << 21U) | pTxHeader->RTR | pTxHeader->IDE);
+			}
+			/*Set the DLC*/
+			hcan->Instance->sTxMailBox[transmitmailbox].TDTR = (pTxHeader->DLC);
+
+			if( pTxHeader->TimeStamp == ENABLE ){
+				SET_FIELD(hcan->Instance->sTxMailBox[transmitmailbox].TDTR, 0x01UL,8U);
+			}
+			/*Write data into the Registers*/
+			WRITE_REG(hcan->Instance->sTxMailBox[transmitmailbox].TDHR,
+						((uint32_t)txData[7] << 24U) |
+						((uint32_t)txData[6] << 16U) |
+						((uint32_t)txData[5] << 8U ) |
+						((uint32_t)txData[4] << 0U ));
+
+			WRITE_REG(hcan->Instance->sTxMailBox[transmitmailbox].TDLR,
+						((uint32_t)txData[3] << 24U) |
+						((uint32_t)txData[2] << 16U) |
+						((uint32_t)txData[1] << 8U ) |
+						((uint32_t)txData[0] << 0U ));
+
+			/*Set Reqquest Transmission*/
+			SET_FIELD(hcan->Instance->sTxMailBox[transmitmailbox].TIR, 0x01UL, 0U);
+
+			/*Return Function Status*/
+			return VIC_OK;
+		}
+		else{
+
+			/*Update Error Code*/
+			hcan->ErrorCode |= CAN_ERROR_PARAM;
+
+			/*Return Function Status*/
+			return VIC_ERROR;
+		}
+	}
+	else{
+
+		/*Update Error Code*/
+		hcan->ErrorCode |= CAN_ERROR_NOT_INTIALIZED;
+
+		/*Return Function Status*/
+		return VIC_ERROR;
+	}
+}
+
+Status_TypeDef CAN_Compute_Baud(CAN_HandleTypeDef* hcan, uint32_t* BaudRate){
+
+	if(	hcan->state == CAN_STATE_READY){
+		float apb1clk = (float) (RCC_GetP1CLK_Freq()/1000000);
+
+		float tpclk = (1.0/apb1clk) * 1000 ;
+
+		uint16_t prescaler = READ_FIELD(hcan->Instance->BTR, 0, 0x3FF) + 1;
+
+		float tq =  tpclk * prescaler;
+
+		uint16_t bs1   	= READ_FIELD(hcan->Instance->BTR, 16,0x0F),
+				 bs2    = READ_FIELD(hcan->Instance->BTR, 20,0x07),
+				 sync   = READ_FIELD(hcan->Instance->BTR, 24,0x03);
+
+		float N = sync + bs1 + bs2;
+
+		float NBT = (N * tq) / 1000;
+
+		 *BaudRate = 1/(NBT / 1000000);
+
+		return VIC_OK;
+
+	}
+	return VIC_ERROR;
 }

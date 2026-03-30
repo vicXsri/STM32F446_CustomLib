@@ -7,6 +7,9 @@
 
 #include "msp.h"
 
+#define MODE_AF                                 (0x2UL << 0U)
+#define OUTPUT_PP                               (0x0UL << 4U)
+#define  GPIO_MODE_AF_PP                        (MODE_AF | OUTPUT_PP)
 
 void USART_MspInit(UART_HandleTypeDef* huart){
 	  GPIO_InitTypeDef GPIO_InitStruct = {0};
@@ -50,31 +53,34 @@ void CAN_MspInit(CAN_HandleTypeDef* hcan){
 	if(hcan->Instance == CAN1){
 
 		  __RCC_CAN1_CLK_ENABLE();
+		  delay(100);
 		  __RCC_GPIOA_CLK_ENABLE();
 
-		  /**CAN1 GPIO Configuration
+		  /**
+		   	CAN1 GPIO Configuration
 			PA12     ------> CAN1_TX
 			PA11     ------> CAN1_RX
 		   **/
 
 		  /*TX*/
-		  GPIO_InitStruct.Pin = GPIO_PIN_12 ;
-		  GPIO_InitStruct.Mode = GPIO_ALTERNATE;
+		  GPIO_InitStruct.Pin = GPIO_PIN_12;
+		  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
 		  GPIO_InitStruct.Pull = GPIO_NOPULL;
 		  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-		  GPIO_InitStruct.OType = GPIO_MODE_OUTPUT_PP;
+//		  GPIO_InitStruct.OType = GPIO_MODE_OUTPUT_PP;
 		  GPIO_InitStruct.Alternate = GPIO_AF9;
 		  GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 		  /*RX*/
 		  GPIO_InitStruct.Pin = GPIO_PIN_11 ;
-		  GPIO_InitStruct.Mode = GPIO_ALTERNATE;
+		  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
 		  GPIO_InitStruct.Pull = GPIO_NOPULL;
 		  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-		  GPIO_InitStruct.OType = GPIO_MODE_OUTPUT_PP;
+//		  GPIO_InitStruct.OType = GPIO_MODE_OUTPUT_PP;
 		  GPIO_InitStruct.Alternate = GPIO_AF9;
 		  GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 	  }
 
 }
+
