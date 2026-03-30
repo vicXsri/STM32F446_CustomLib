@@ -46,10 +46,10 @@ void filter_can(void){
 	canFilter.SlaveStartFilterBank = 14;
 
 		if(CAN_ConfigFilter(&hcan1, &canFilter) != VIC_OK){
-//			printf("Filter Error\r\n\r\n");
+			printf("Filter Error\r\n\r\n");
 			Error_Handler();
 		}else{
-//			printf("Filter Success\r\n\r\n");
+			printf("Filter Success\r\n\r\n");
 		}
 }
 uint8_t itr=0;
@@ -69,10 +69,10 @@ void transmit_can(void){
 	txData[7] = itr++;
 
 	if(CAN_TransmitMessage(&hcan1, &TxHeader, txData, &mailbox) != VIC_OK){
-//		printf("Transmit Failed\r\n\r\n");
+		printf("Transmit Failed\r\n\r\n");
 		Error_Handler();
 	}else{
-//		printf("Transmit Success\r\n\r\n");
+		printf("Transmit Success\r\n\r\n");
 	}
 
 }
@@ -106,10 +106,10 @@ int main(void)
 
 	/* Start CAN !*/
 	if(CAN_Start(&hcan1) != VIC_OK){
-//		printf("CAN Start Failed\r\n\r\n");
+		printf("CAN Start Failed\r\n\r\n");
 		Error_Handler();
 	}else{
-//		printf("CAN Start Success\r\n\r\n");
+		printf("CAN Start Success\r\n\r\n");
 	}
 
 
