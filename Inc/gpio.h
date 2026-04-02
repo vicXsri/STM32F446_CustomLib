@@ -31,14 +31,7 @@ typedef struct{
 	uint32_t OType; // specifies the pin with pp / od config
 }GPIO_InitTypeDef;
 
-#define GPIOA_BASE		(AHB1_BASE + 0x0000UL)
-#define GPIOB_BASE		(AHB1_BASE + 0x0400UL)
-#define GPIOC_BASE		(AHB1_BASE + 0x0800UL)
-#define GPIOD_BASE		(AHB1_BASE + 0x0C00UL)
-#define GPIOE_BASE		(AHB1_BASE + 0x1000UL)
-#define GPIOF_BASE		(AHB1_BASE + 0x1400UL)
-#define GPIOG_BASE		(AHB1_BASE + 0x1800UL)
-#define GPIOH_BASE		(AHB1_BASE + 0x1C00UL)
+
 
 #define GPIOA			((GPIO_Typedef*) GPIOA_BASE)
 #define GPIOB			((GPIO_Typedef*) GPIOB_BASE)
@@ -65,6 +58,8 @@ typedef struct{
 #define GPIO_PIN_13					(0x000D)
 #define GPIO_PIN_14					(0x000E)
 #define GPIO_PIN_15					(0x000F)
+
+
 
 #define	GPIO_INPUT					(0x00U)
 #define	GPIO_OUTPUT					(0x01U)

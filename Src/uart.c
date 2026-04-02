@@ -100,7 +100,7 @@ int __io_putchar(int ch){
 }
 void debug(int ch){
 	while(!(USART2->SR & (1U << 7)));
-	USART2->DR = (ch &0xFF);
+	USART2->DR = (ch & 0xFF);
 }
 /********************************************************************************************/
 

@@ -73,8 +73,21 @@ void transmit_can(void){
 		Error_Handler();
 	}else{
 		printf("Transmit Success\r\n\r\n");
+		while (!(CAN1->TSR & (1U << 0U)));
+		CAN1->TSR |= 1U << 0U;
 	}
 
+}
+
+void recieve_can(void){
+	if(CAN_TransmitMessage(&hcan1, &TxHeader, txData, &mailbox) != VIC_OK){
+		printf("Transmit Failed\r\n\r\n");
+		Error_Handler();
+	}else{
+		printf("Transmit Success\r\n\r\n");
+		while (!(CAN1->TSR & (1U << 0U)));
+		CAN1->TSR |= 1U << 0U;
+	}
 }
 
 int main(void)
@@ -219,9 +232,9 @@ void M_CAN1_Init(void){
 	hcan1.Instance = CAN1;
 	hcan1.Init.Mode = CAN_LOOPBACK_MODE;
 	hcan1.Init.Prescaler = 5;
-	hcan1.Init.SyncJumpWidth = 1;
 	hcan1.Init.TimeSegment1 = 15;
 	hcan1.Init.TimeSegment2 = 2;
+	hcan1.Init.SyncJumpWidth = 1;
 	hcan1.Init.TimeTriggeredMode = DISABLE;
 	hcan1.Init.AutoBusOff = DISABLE;
 	hcan1.Init.AutoWakeUp = DISABLE;
@@ -236,6 +249,8 @@ void M_CAN1_Init(void){
 }
 
 void Error_Handler(void){
-	GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-	delay(500);
+	while(1){
+		GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+		delay(100);
+	}
 }

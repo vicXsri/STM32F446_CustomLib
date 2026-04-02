@@ -284,7 +284,7 @@ Status_TypeDef CAN_TransmitMessage(CAN_HandleTypeDef* hcan, const CAN_TxTypeDef*
 						((pTxHeader->StdId << 21U)| pTxHeader->RTR);
 			}else{
 				hcan->Instance->sTxMailBox[transmitmailbox].TIR =
-						((pTxHeader->ExtId << 21U) | pTxHeader->RTR | pTxHeader->IDE);
+						((pTxHeader->ExtId << 3U) | pTxHeader->RTR | pTxHeader->IDE);
 			}
 			/*Set the DLC*/
 			hcan->Instance->sTxMailBox[transmitmailbox].TDTR = (pTxHeader->DLC);
@@ -332,7 +332,7 @@ Status_TypeDef CAN_TransmitMessage(CAN_HandleTypeDef* hcan, const CAN_TxTypeDef*
 
 Status_TypeDef CAN_Compute_Baud(CAN_HandleTypeDef* hcan, uint32_t* BaudRate){
 
-	if(	hcan->state == CAN_STATE_READY){
+	if(	(hcan->state == CAN_STATE_READY) || (hcan->state == CAN_STATE_LISTENING) ){
 		float apb1clk = (float) (RCC_GetP1CLK_Freq()/1000000);
 
 		float tpclk = (1.0/apb1clk) * 1000 ;
@@ -341,9 +341,9 @@ Status_TypeDef CAN_Compute_Baud(CAN_HandleTypeDef* hcan, uint32_t* BaudRate){
 
 		float tq =  tpclk * prescaler;
 
-		uint16_t bs1   	= READ_FIELD(hcan->Instance->BTR, 16,0x0F),
-				 bs2    = READ_FIELD(hcan->Instance->BTR, 20,0x07),
-				 sync   = READ_FIELD(hcan->Instance->BTR, 24,0x03);
+		uint16_t bs1   	= READ_FIELD(hcan->Instance->BTR, 16,0x0F) + 1,
+				 bs2    = READ_FIELD(hcan->Instance->BTR, 20,0x07) + 1,
+				 sync   = READ_FIELD(hcan->Instance->BTR, 24,0x03) + 1;
 
 		float N = sync + bs1 + bs2;
 
